@@ -1,0 +1,37 @@
+int wingYellow  = 9;   // Kanat Çakarları (birbirine bağlı) \  Wing Strobe Lights
+int bodyYellow  = 8;   // Gövde Çakarları (üst + alt, birbirine bağlı) \ Body Strobe Lights
+int redPins[]   = {10, 11, 12};  // Kırmızı LED'ler (pozisyon ışığı) \  Left Position Light
+int greenPin    = 13;            // Yeşil LED (pozisyon ışığı)  \  Right Position Light
+
+void setup() {
+  pinMode(wingYellow, OUTPUT);
+  pinMode(bodyYellow, OUTPUT);
+
+  for (int i = 0; i < 3; i++) {
+    pinMode(redPins[i], OUTPUT);
+    digitalWrite(redPins[i], HIGH);  // Kırmızılar sabit  \  The left position light is on steadily.
+  }
+  pinMode(greenPin, OUTPUT);
+  digitalWrite(greenPin, HIGH);      // Yeşil sabit   \ The right position light is on steadily.
+}
+void loop() {
+  // KANAT  ÇAKAR  \  WING STROBE LIGHT
+  digitalWrite(wingYellow, HIGH);
+  delay(40);
+  digitalWrite(wingYellow, LOW);
+  delay(100);
+  digitalWrite(wingYellow, HIGH);
+  delay(40);
+  digitalWrite(wingYellow, LOW);
+  delay(500);
+
+  // GÖVDE  \  BODY STROBE LIGHT
+  digitalWrite(bodyYellow, HIGH);
+  delay(40);
+  digitalWrite(bodyYellow, LOW);
+  delay(100);
+  digitalWrite(bodyYellow, HIGH);
+  delay(40);
+  digitalWrite(bodyYellow, LOW);
+  delay(500);   
+}

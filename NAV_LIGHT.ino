@@ -1,0 +1,51 @@
+const int yellowPins[] = {8, 9};        // Sarı LED grupları (strobe / anti-çakışma) // Amber LED groups (strobe / anti-collision)
+const int redPins[]     = {10, 11, 12}; // Kırmızı LEDler (pozisyon ışığı) // Red LEDs (position light)
+const int greenPin      = 13;           // Yeşil LED (pozisyon ışığı) // Green LED (position light)
+
+const int numYellow = sizeof(yellowPins) / sizeof(yellowPins[0]);
+const int numRed    = sizeof(redPins)    / sizeof(redPins[0]);
+
+// --- Gerçek strobe paterni: flaş - kısa ara - flaş - uzun bekleme ---
+// --- Actual strobe pattern: flash - short pause - flash - long wait ---
+const unsigned long pattern[] = {40, 100, 40, 1000};
+const int patternLength = sizeof(pattern) / sizeof(pattern[0]);
+
+int patternIndex = 0;
+unsigned long previousMillis = 0;
+bool strobeState = false;
+
+void setYellow(bool state) {
+  for (int i = 0; i < numYellow; i++) {
+    digitalWrite(yellowPins[i], state ? HIGH : LOW);
+  }
+}
+
+void setup() {
+  for (int i = 0; i < numYellow; i++) pinMode(yellowPins[i], OUTPUT);
+  for (int i = 0; i < numRed; i++)    pinMode(redPins[i], OUTPUT);
+  pinMode(greenPin, OUTPUT);
+
+  // Pozisyon ışıkları (kırmızı + yeşil) sabit \ Position lights (red + green) remain constantly lit.
+  for (int i = 0; i < numRed; i++) digitalWrite(redPins[i], HIGH);
+  digitalWrite(greenPin, HIGH);
+
+  // Strobe ilk adımı başlat (ilk adım = açık)  \ Start the strobe's first step (first step = on)
+  strobeState = true;
+  setYellow(true);
+  previousMillis = millis();
+}
+
+void loop() {
+  unsigned long currentMillis = millis();
+
+  if (currentMillis - previousMillis >= pattern[patternIndex]) {
+    previousMillis = currentMillis;
+
+    // Sıradaki adıma geç \NEXT STEP
+    patternIndex = (patternIndex + 1) % patternLength;
+
+    // Adım çift ise (0,2 -> açık; 1,3 -> kapalı) \ If the step is even (0, 2 -> open; 1, 3 -> closed)
+    strobeState = (patternIndex % 2 == 0);
+    setYellow(strobeState);
+  }
+}
